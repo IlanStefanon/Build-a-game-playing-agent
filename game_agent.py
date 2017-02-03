@@ -35,7 +35,15 @@ def custom_score(game, player):
     """
 
     # TODO: finish this function!
-    return float(len(game.get_legal_moves(player))) - float(len(game.get_legal_moves(game.get_opponent(player))))
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(own_moves - opp_moves)
 
 
 class CustomPlayer:
@@ -130,7 +138,8 @@ class CustomPlayer:
             # when the timer gets close to expiring   
             if self.iterative:
                 depth = 0
-                while True:
+                # print(self.search_depth)
+                while depth <= self.search_depth or self.search_depth == -1:
                     for move in legal_moves:
                         if self.method == 'minimax':
                             # print('minimax in iterative')
@@ -142,6 +151,8 @@ class CustomPlayer:
                             best_value = v
                             best_move = move
                     depth += 1
+                    # if depth > 100:
+                    #     break
                     # print('depth', depth)
             else:
                 for move in legal_moves:
