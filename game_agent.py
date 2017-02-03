@@ -280,4 +280,3 @@ class CustomPlayer:
                 if beta <= alpha :
                     break
             return best_value, best_move
- 
