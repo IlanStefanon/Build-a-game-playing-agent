@@ -121,7 +121,7 @@ class CustomPlayer:
         # move from the game board (i.e., an opening book), or returning
         # immediately if there are no legal moves
         best_move = (-1, -1)
-        best_value  = float('-inf')
+        best_value = float('-inf')
         depth = 1
 
         try:
@@ -129,36 +129,40 @@ class CustomPlayer:
             # here in order to avoid timeout. The try/except block will
             # automatically catch the exception raised by the search method
             # when the timer gets close to expiring   
-            if self.iterative == True:
+            if self.iterative:
                 # Iterative Deepening scheme
                 while depth < self.search_depth:
                     for move in legal_moves:
+                        possible_move = (-1, -1)
                         next_state = game.forecast_move(move)
-                        if  self.method == 'minimax':
+                        if self.method == 'minimax':
                             v, possible_move = self.minimax(next_state, depth)
                         elif self.method == 'alphabeta':
                             v, possible_move = self.alphabeta(next_state, depth)
                         if v > best_value:
                             best_value = v
-                            best_move = possible_move
-                    depth += 1                          
+                            best_move = move
+                    depth += 1
             else:
-            	# General Fixed DFS scheme
-            	for move in legal_moves:
-                        next_state = game.forecast_move(move)
-                        if  self.method == 'minimax':
-                            v, possible_move = self.minimax(next_state, depth)
-                        elif self.method == 'alphabeta':
-                            v, possible_move = self.alphabeta(next_state, depth)
-                        if v > best_value:
-                            best_value = v
-                            best_move = possible_move
+                # General Fixed DFS scheme
+                for move in legal_moves:
+                    possible_move = (-1, -1)
+                    next_state = game.forecast_move(move)
+                    if self.method == 'minimax':
+                        v, possible_move = self.minimax(next_state, depth)
+                    elif self.method == 'alphabeta':
+                        v, possible_move = self.alphabeta(next_state, depth)
+                    if v > best_value:
+                        best_value = v
+                        best_move = move
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
+            print(best_move)
             return best_move
 
         # Return the best move from the last completed search iteration
+        print(best_move)
         return best_move
 
     def minimax(self, game, depth, maximizing_player=True):
@@ -188,33 +192,32 @@ class CustomPlayer:
         """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise Timeout()
-            
+
         legal_moves = game.get_legal_moves()
 
         # TODO: finish this function!
         if depth == 0 or not legal_moves:
-            return self.score(game, self), (-1,-1)     
-            
-        if maximizing_player :
+            return self.score(game, self), (-1, -1)
+
+        if maximizing_player:
             best_value = float("-inf")
-            best_move = (-1,-1)
+            best_move = (-1, -1)
             for move in legal_moves:
-                v, _ = self.minimax(game.forecast_move(move), depth-1, False)
-                if v > best_value :
+                v, _ = self.minimax(game.forecast_move(move), depth - 1, False)
+                if v > best_value:
                     best_value = v
                     best_move = move
             return best_value, best_move
         else:
             best_value = float("inf")
-            best_move = (-1,-1)
+            best_move = (-1, -1)
             for move in legal_moves:
-                v, _ = self.minimax(game.forecast_move(move), depth-1, True)
-                if v < best_value :        
+                v, _ = self.minimax(game.forecast_move(move), depth - 1, True)
+                if v < best_value:
                     best_value = v
                     best_move = move
             return best_value, best_move
-    
-        
+
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
         """Implement minimax search with alpha-beta pruning as described in the
         lectures.
@@ -252,32 +255,31 @@ class CustomPlayer:
 
         # TODO: finish this function!
         legal_moves = game.get_legal_moves()
-        
+
         if depth == 0 or not legal_moves:
-            return self.score(game, self), (-1,-1) 
-        
-        best_move = (-1,-1)
-        
-        
-        if maximizing_player :
+            return self.score(game, self), (-1, -1)
+
+        best_move = (-1, -1)
+
+        if maximizing_player:
             best_value = float("-inf")
             for move in legal_moves:
-                v, _ = self.alphabeta(game.forecast_move(move), depth-1, alpha, beta, False)
-                if v > best_value :
+                v, _ = self.alphabeta(game.forecast_move(move), depth - 1, alpha, beta, False)
+                if v > best_value:
                     best_value = v
                     best_move = move
                 alpha = max(alpha, best_value)
-                if beta <= alpha :
+                if beta <= alpha:
                     break
             return best_value, best_move
         else:
             best_value = float("inf")
             for move in legal_moves:
-                v, _ = self.alphabeta(game.forecast_move(move), depth-1, alpha, beta, True)
-                if v < best_value :
+                v, _ = self.alphabeta(game.forecast_move(move), depth - 1, alpha, beta, True)
+                if v < best_value:
                     best_value = v
                     best_move = move
                 beta = min(beta, best_value)
-                if beta <= alpha :
+                if beta <= alpha:
                     break
             return best_value, best_move
