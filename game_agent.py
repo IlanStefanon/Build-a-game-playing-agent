@@ -256,6 +256,7 @@ class CustomPlayer:
         if depth == 0 or not legal_moves:
             return self.score(game, self), (-1,-1) 
         
+        best_move = (-1,-1)
         
         
         if maximizing_player :
