@@ -122,7 +122,6 @@ class CustomPlayer:
         # immediately if there are no legal moves
         best_move = (-1, -1)
         best_value = float('-inf')
-        depth = 0
 
         try:
             # The search method call (alpha beta or minimax) should happen in
@@ -130,31 +129,37 @@ class CustomPlayer:
             # automatically catch the exception raised by the search method
             # when the timer gets close to expiring   
             if self.iterative:
+                depth = 0
                 while True:
                     for move in legal_moves:
-                        next_state = game.forecast_move(move)
                         if self.method == 'minimax':
-                            v, _ = self.minimax(next_state, depth)
+                            # print('minimax in iterative')
+                            v, _ = self.minimax(game.forecast_move(move), depth)
                         elif self.method == 'alphabeta':
-                            v, _ = self.alphabeta(next_state, depth)
+                            # print('alphabeta in iterative')
+                            v, _ = self.alphabeta(game.forecast_move(move), depth)
                         if v > best_value:
                             best_value = v
                             best_move = move
                     depth += 1
+                    # print('depth', depth)
             else:
                 for move in legal_moves:
-                    next_state = game.forecast_move(move)
                     if self.method == 'minimax':
-                        v, _ = self.minimax(next_state, self.search_depth)
+                        # print('minimax')
+                        v, _ = self.minimax(game.forecast_move(move), self.search_depth)
                     elif self.method == 'alphabeta':
-                        v, _ = self.alphabeta(next_state, self.search_depth)
+                        # print('alphabeta')
+                        v, _ = self.alphabeta(game.forecast_move(move), self.search_depth)
                     if v > best_value:
                         best_value = v
                         best_move = move
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
+            # print('depth', depth)
             return best_move
+
 
         # Return the best move from the last completed search iteration
         return best_move
@@ -250,7 +255,9 @@ class CustomPlayer:
         # TODO: finish this function!
         legal_moves = game.get_legal_moves()
 
+
         if depth == 0 or not legal_moves:
+            # print('terminate state')
             return self.score(game, self), (-1, -1)
 
         best_move = (-1, -1)
