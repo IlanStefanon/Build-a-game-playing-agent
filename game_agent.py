@@ -49,28 +49,26 @@ def custom_score(game, player):
     
     #blank_space = len(game.get_blank_spaces())
     # print(blank_space)
-    a = 1
-    b = 2
+
     own_moves_next = 0.
     opp_moves_next = 0.
 
     max_possible_moves = 8.
 
-    for move in game.get_legal_moves(player):
-        next_state = game.forecast_move(move)
-        own_moves_next += len(next_state.get_legal_moves(player))/ max_possible_moves
+    # for move in game.get_legal_moves(player):
+    #     next_state = game.forecast_move(move)
+    #     own_moves_next += len(next_state.get_legal_moves(player))/ max_possible_moves
 
-    for move in game.get_legal_moves(game.get_opponent(player)):
-        next_state = game.forecast_move(move)
-        opp_moves_next += len(next_state.get_legal_moves(game.get_opponent(player)))/ max_possible_moves
+    # for move in game.get_legal_moves(game.get_opponent(player)):
+    #     next_state = game.forecast_move(move)
+    #     opp_moves_next += len(next_state.get_legal_moves(game.get_opponent(player)))/ max_possible_moves
     # len({game.getNextState(state, jointMove) for jointMove in
 
     # print('moves', a * float(own_moves - opp_moves)/max_possible_moves)
     # print('moves_next', b * float(own_moves_next - opp_moves_next)/max_possible_moves)
     #     self.game.getLegalJointMoves(state)}) * 100.0) / self.MAX_POSSIBLE_STATES
     # return a * float(own_moves - opp_moves)  #+ b * float(49) / float(blank_space)
-    return  a * float(own_moves - opp_moves)/max_possible_moves + \
-            b * float(own_moves_next - opp_moves_next)/max_possible_moves
+    return  float(own_moves - opp_moves)/max_possible_moves #+  * float(own_moves_next - opp_moves_next)/max_possible_moves
 
 class CustomPlayer:
     """Game-playing agent that chooses a move using your evaluation function

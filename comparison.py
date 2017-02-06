@@ -32,9 +32,10 @@ from sample_players import null_score
 from sample_players import open_move_score
 from sample_players import improved_score
 from game_agent import CustomPlayer
+from game_agent_test import CustomPlayerTest
 from game_agent import custom_score
 
-NUM_MATCHES = 20  # number of matches against each opponent
+NUM_MATCHES = 25  # number of matches against each opponent
 TIME_LIMIT = 150  # number of milliseconds before timeout
 
 TIMEOUT_WARNING = "One or more agents lost a match this round due to " + \
@@ -148,7 +149,10 @@ def main():
     AB_ARGS = {"search_depth": 5, "method": 'alphabeta', "iterative": False}
     MM_ARGS = {"search_depth": 3, "method": 'minimax', "iterative": False}
     CUSTOM_ARGS = {"method": 'alphabeta', 'iterative': True}
-
+    w1 = [1]
+    w2_list = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]
+    custom_agents = [Agent(CustomPlayer(w2=h, **CUSTOM_ARGS),
+                       "custom_" + str(h)) for h in w2_list]
     # Create a collection of CPU agents using fixed-depth minimax or alpha beta
     # search, or random selection.  The agent names encode the search method
     # (MM=minimax, AB=alpha-beta) and the heuristic function (Null=null_score,
@@ -174,13 +178,24 @@ def main():
     print("{:^25}".format("Evaluating: " + Student_agent[0].name + " versus " + ID_Improved_agent[0].name))
     print("*************************")
 
-    agents = ID_Improved_agent + Student_agent
-    win_ratio = play_round(agents, NUM_MATCHES)
+    # agents = ID_Improved_agent + Student_agent
+    # win_ratio = play_round(agents, NUM_MATCHES)
+    for w2_ in w2_list:
+        custom_agent_test = [Agent(CustomPlayerTest(w2=w2_, **CUSTOM_ARGS), "custom_" +str(w2_))]
+        agents = Student_agent + custom_agent_test
+        win_ratio = play_round(agents, NUM_MATCHES)
+        print("\n\nResults:")
+        print("----------")
+        print("{!s:<15}{:>10.2f}%".format(custom_agent_test[0].name, win_ratio))
+        print("{!s:<15}{:>10.2f}%".format('likelihood_of_superiority : ',
+                                          likelihood_of_superiority(win_ratio, 2 * NUM_MATCHES)))
 
-    print("\n\nResults:")
-    print("----------")
-    print("{!s:<15}{:>10.2f}%".format(Student_agent[0].name, win_ratio))
-    print("{!s:<15}{:>10.2f}%".format('likelihood_of_superiority : ', likelihood_of_superiority(win_ratio, 2 * NUM_MATCHES)))
+
+
+    # print("\n\nResults:")
+    # print("----------")
+    # print("{!s:<15}{:>10.2f}%".format(Student_agent[0].name, win_ratio))
+    # print("{!s:<15}{:>10.2f}%".format('likelihood_of_superiority : ', likelihood_of_superiority(win_ratio, 2 * NUM_MATCHES)))
 
 if __name__ == "__main__":
     main()

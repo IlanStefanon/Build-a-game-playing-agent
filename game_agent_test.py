@@ -91,8 +91,7 @@ class CustomPlayerTest:
 
         # blank_space = len(game.get_blank_spaces())
         # print(blank_space)
-        a = 1
-        b = 3
+
         own_moves_next = 0.
         opp_moves_next = 0.
 
