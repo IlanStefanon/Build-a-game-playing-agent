@@ -46,7 +46,7 @@ class CustomPlayerTest:
     """
 
     def __init__(self, search_depth=3,
-                 iterative=True, method='minimax', timeout=10., w1 = 1, w2 = 1):
+                 iterative=True, method='minimax', timeout=10., w1 = 1, w2 = 1, w3 = 0):
         self.search_depth = search_depth
         self.iterative = iterative
         self.method = method
@@ -55,6 +55,7 @@ class CustomPlayerTest:
 
         self.w1 = w1
         self.w2 = w2
+        self.w3 = w3
 
     def custom_score(self, game, player):
         """Calculate the heuristic value of a game state from the point of view
@@ -95,23 +96,36 @@ class CustomPlayerTest:
         own_moves_next = 0.
         opp_moves_next = 0.
 
+        own_moves_next_next = 0.
+        opp_moves_next_next = 0.
+
         max_possible_moves = 8.
 
         for move in game.get_legal_moves(player):
             next_state = game.forecast_move(move)
             own_moves_next += len(next_state.get_legal_moves(player)) / max_possible_moves
+            if self.w3 != 0:
+                for move in next_state.get_legal_moves(player):
+                    next_next_state = next_state.forecast_move(move)
+                    own_moves_next_next += len(next_next_state.get_legal_moves(player)) / max_possible_moves
+
 
         for move in game.get_legal_moves(game.get_opponent(player)):
             next_state = game.forecast_move(move)
             opp_moves_next += len(next_state.get_legal_moves(game.get_opponent(player))) / max_possible_moves
+            if self.w3 != 0:
+                for move in next_state.get_legal_moves(next_state.get_opponent(player)):
+                    next_next_state = next_state.forecast_move(move)
+                    opp_moves_next_next += len(next_next_state.get_legal_moves(next_next_state.get_opponent(player))) / max_possible_moves
         # len({game.getNextState(state, jointMove) for jointMove in
 
         # print('moves', a * float(own_moves - opp_moves)/max_possible_moves)
         # print('moves_next', b * float(own_moves_next - opp_moves_next)/max_possible_moves)
         #     self.game.getLegalJointMoves(state)}) * 100.0) / self.MAX_POSSIBLE_STATES
         # return a * float(own_moves - opp_moves)  #+ b * float(49) / float(blank_space)
-        return self.w1 * float(own_moves - opp_moves) / max_possible_moves + \
-               self.w1 * float(own_moves_next - opp_moves_next) / max_possible_moves
+        return  game.utility(player) +  self.w1 * float(own_moves - opp_moves) / max_possible_moves + \
+                                        self.w2 * float(own_moves_next - opp_moves_next) / max_possible_moves + \
+                                        self.w3 * float(own_moves_next_next - opp_moves_next_next) / max_possible_moves
 
     def get_move(self, game, legal_moves, time_left):
         """Search for the best move from the available legal moves and return a

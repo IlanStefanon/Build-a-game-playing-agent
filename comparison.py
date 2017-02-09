@@ -149,10 +149,10 @@ def main():
     AB_ARGS = {"search_depth": 5, "method": 'alphabeta', "iterative": False}
     MM_ARGS = {"search_depth": 3, "method": 'minimax', "iterative": False}
     CUSTOM_ARGS = {"method": 'alphabeta', 'iterative': True}
-    w1 = [1]
-    w2_list = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]
-    custom_agents = [Agent(CustomPlayer(w2=h, **CUSTOM_ARGS),
-                       "custom_" + str(h)) for h in w2_list]
+    # w1 = [1]
+
+    # custom_agents = [Agent(CustomPlayer(w2=h, **CUSTOM_ARGS),
+    #                    "custom_" + str(h)) for h in w2_list]
     # Create a collection of CPU agents using fixed-depth minimax or alpha beta
     # search, or random selection.  The agent names encode the search method
     # (MM=minimax, AB=alpha-beta) and the heuristic function (Null=null_score,
@@ -172,23 +172,39 @@ def main():
     ID_Improved_agent = [Agent(CustomPlayer(score_fn=improved_score, **CUSTOM_ARGS), "ID_Improved")]
     Student_agent = [Agent(CustomPlayer(score_fn=custom_score, **CUSTOM_ARGS), "Student")]
 
+    print("")
+    print("*************************")
+    print("{:^25}".format("Evaluating: " + ID_Improved_agent[0].name))
+    print("*************************")
+
+    agents = random_agents + mm_agents + ab_agents + ID_Improved_agent
+    win_ratio = play_round(agents, NUM_MATCHES)
+
+    print("\n\nResults:")
+    print("----------")
+    print("{!s:<15}{:>10.2f}%".format(ID_Improved_agent[0].name, win_ratio))
+
+
     print(DESCRIPTION)
     print("")
     print("*************************")
-    print("{:^25}".format("Evaluating: " + Student_agent[0].name + " versus " + ID_Improved_agent[0].name))
+    print("{:^25}".format("Evaluating: " + Student_agent[0].name ))
     print("*************************")
 
     # agents = ID_Improved_agent + Student_agent
     # win_ratio = play_round(agents, NUM_MATCHES)
+    w2_list = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]
+    w3_list = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]
     for w2_ in w2_list:
-        custom_agent_test = [Agent(CustomPlayerTest(w2=w2_, **CUSTOM_ARGS), "custom_" +str(w2_))]
-        agents = Student_agent + custom_agent_test
-        win_ratio = play_round(agents, NUM_MATCHES)
-        print("\n\nResults:")
-        print("----------")
-        print("{!s:<15}{:>10.2f}%".format(custom_agent_test[0].name, win_ratio))
-        print("{!s:<15}{:>10.2f}%".format('likelihood_of_superiority : ',
-                                          likelihood_of_superiority(win_ratio, 2 * NUM_MATCHES)))
+        for w3_ in w3_list:
+            custom_agent_test = [Agent(CustomPlayerTest(w2=w2_, w3=w3_, **CUSTOM_ARGS), "custom_" +str(w2_) + "_" +str(w3_))]
+            agents = random_agents + mm_agents + ab_agents + custom_agent_test
+            win_ratio = play_round(agents, NUM_MATCHES)
+            print("\n\nResults:")
+            print("----------")
+            print("{!s:<15}{:>10.2f}%".format(custom_agent_test[0].name, win_ratio))
+            print("{!s:<15}{:>10.2f}%".format('likelihood_of_superiority : ',
+                                              likelihood_of_superiority(win_ratio, 2 * NUM_MATCHES)))
 
 
 
